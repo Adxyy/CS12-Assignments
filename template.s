@@ -25,32 +25,28 @@ lossSize = .-loss
 .global _start // Linux Standard _start, similar to main in C/C++ 
 _start:
 
-mov x0, #0xFF
-bl getRandomNumber
-mov x1, x0
-
 ldr x1, =prompt
 ldr x2, =promptSize
-mov x2, #0
 mov x8, #64
-svc #0
-mov x2, x0
+svc 0
 
-mov w3, #1
+mov x0, #0xFF
+bl getHexNumber
+
+bl printX0
+mov x10, x0
+
+b loop
 
 loop:
-cmp w2, w1
+cmp x1, x2
+b.hi high
+b.lo low
 b.eq win
-
-cmp w2, w1
-b.hs gLower
-
-cmp w2, w1
-b.lo gHigher
 
 mov x2, #0
 mov x8, #64
-svc #0
+svc 0
 b loop
 
 gLower:
@@ -59,8 +55,8 @@ ldr x1, =low
 ldr x2, =lowSize
 mov x2, #0
 mov x8, #64
-svc #0
-mov x2, x0
+svc 0
+mov x2, #0
 b guessCount
 
 gHigher:
@@ -69,8 +65,8 @@ ldr x1, =high
 ldr x2, =highSize
 mov x2, #0
 mov x8, #64
-svc #0
-mov x2, x0
+svc 0
+mov x2, #0
 b guessCount
 
 Win:
@@ -79,19 +75,18 @@ ldr x2, =winSize
 mov x1, #winSize
 mov x2, #0
 mov x8, #64
-svc #0
+svc 0
 b end
 
 guessCount:
-add w3, w3, #1
-cmp w3, #Guess
+add x3, x3, #1
+cmp x3, #Guess
 b.le loop
-adrp x0, loss
-add x0, x0, #:lo12:loss
-mov x1, #lossSize
+ldr x1, =loss
+ldr x2, =lossSize
 mov x2, #0
 mov x8, #64
-svc #0
+svc 0
 b end
 
 end:
@@ -103,9 +98,3 @@ svc #0
 mov x0, #0          // return value
 mov x8, #93         // Service call code
 svc 0               // Linux service call
-
-
-
-
-
-
