@@ -1,0 +1,91 @@
+.data
+deck:   .skip   52
+values: .asciz  "A23456789TJQK"
+suits:  .asciz  "HDCS"
+
+.MACRO push register
+    stmfd sp!, {register}
+.ENDM
+
+.MACRO pop register
+    ldmfd sp!, {register}
+.ENDM
+
+.MACRO endl
+    mov r0, #10
+    bl putchar
+.ENDM
+
+.MACRO printDeck deck
+    mov r4, #0
+    1: ldrb r0, [deck, r4]
+    bl printCardValue
+    bl printCardSuit
+    bl endl
+    add r4, r4, #1
+    cmp r4, #52
+    bne 1b
+.ENDM
+
+.MACRO dealHand deck handSize
+    mov r4, #0
+    1: ldrb r0, [deck, r4]
+    bl printCardValue
+    bl printCardSuit
+    bl endl
+    add r4, r4, #1
+    cmp r4, handSize
+    bne 1b
+.ENDM
+
+.MACRO newDeck deck
+    mov r4, #0
+    1: mov r1, r4, lsl #24
+    mov r2, r4, lsl #16
+    mov r3, r4, lsl #8
+    orr r0, r1, r2
+    orr r0, r0, r3
+    orr r0, r0, r4
+    strb r0, [deck, r4]
+    add r4, r4, #1
+    cmp r4, #52
+    bne 1b
+.ENDM
+
+.MACRO shuffleDeck deck
+    mov r4, #0
+    1: ldrb r0, [deck, r4]
+    bl random
+    and r1, r0, #0x3F
+    ldrb r2, [deck, r1]
+    strb r2, [deck, r4]
+    strb r0, [deck, r1]
+    add r4, r4, #1
+    cmp r4, #52
+    bne 1b
+.ENDM
+
+.MACRO printCardValue cardNumber
+    ldr r1, =values
+    ldrb r0, [r1, cardNumber]
+    bl putchar
+.ENDM
+
+.MACRO printCardSuit cardNumber
+    ldr r1, =suits
+    ldrb r0, [r1, cardNumber]
+    bl putchar
+.ENDM
+
+.global _start
+_start:
+    mov sp, #0x8000
+    newDeck deck
+    shuffleDeck deck
+    printDeck deck
+    b _start
+
+; Exit
+    mov     r0, #0
+    mov     r7, #1
+    svc     #0
