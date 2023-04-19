@@ -67,8 +67,16 @@ suits:  .asciz  "HDCS"
 
 .MACRO printCardValue cardNumber
     ldr r1, =values
-    ldrb r0, [r1, cardNumber]
-    bl putchar
+    mov r2, #0
+    1: ldrb r3, [r1, r2]
+       cmp r3, #\cardNumber
+       beq 2f
+       add r2, r2, #1
+       cmp r2, #13
+       blo 1b
+       b 3f
+    2: bl putchar
+    3:
 .ENDM
 
 .MACRO printCardSuit cardNumber
