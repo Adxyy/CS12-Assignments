@@ -24,7 +24,7 @@ suits:  .asciz  "HDCS"
     bl endl
     add r4, r4, #1
     cmp r4, #52
-    bne 1b
+    blo 1b
 .ENDM
 
 .MACRO dealHand deck handSize
@@ -35,7 +35,7 @@ suits:  .asciz  "HDCS"
     bl endl
     add r4, r4, #1
     cmp r4, handSize
-    bne 1b
+    blo 1b
 .ENDM
 
 .MACRO newDeck deck
@@ -49,7 +49,7 @@ suits:  .asciz  "HDCS"
     strb r0, [deck, r4]
     add r4, r4, #1
     cmp r4, #52
-    bne 1b
+    blo 1b
 .ENDM
 
 .MACRO shuffleDeck deck
@@ -62,7 +62,7 @@ suits:  .asciz  "HDCS"
     strb r0, [deck, r1]
     add r4, r4, #1
     cmp r4, #52
-    bne 1b
+    blo 1b
 .ENDM
 
 .MACRO printCardValue cardNumber
